@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broma para los panas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #1f2a44 0%, #111827 45%, #05070d 100%);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 92%;
+      max-width: 860px;
+      padding: 36px 26px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+      text-align: center;
+    }
+
+    .title {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      color: #c7f0ff;
+      text-shadow: 0 0 12px rgba(120, 220, 255, 0.25);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #d9e7ff;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
+
+    .line {
+      font-size: 1.28rem;
+      margin: 14px 0;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: all 0.7s ease;
+      color: #f7fbff;
+    }
+
+    .line.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .main-btn, .option-btn, .restart-btn {
+      border: none;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease;
+      font-weight: bold;
+    }
+
+    .main-btn {
+      margin-top: 24px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      padding: 15px 28px;
+      font-size: 1rem;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+    }
+
+    .main-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #20b457, #15803d);
+    }
+
+    .hidden { display: none; }
+
+    .question-box, .suspense-box, .joke-box {
+      margin-top: 20px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .question {
+      font-size: 1.65rem;
+      margin-bottom: 20px;
+      color: #c9f9d8;
+    }
+
+    .options {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .option-btn {
+      padding: 14px 22px;
+      border-radius: 15px;
+      font-size: 1rem;
+      color: white;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .option-btn:hover {
+      transform: scale(1.04);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .suspense-title {
+      font-size: 1.75rem;
+      color: #ffe08a;
+      margin-bottom: 10px;
+    }
+
+    .suspense-text {
+      font-size: 1.18rem;
+      line-height: 1.7;
+      color: #fef3c7;
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 8px;
+      margin-top: 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffe08a;
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dot:nth-child(3) { animation-delay: 0.30s; }
+
+    .progress-wrap {
+      width: min(100%, 470px);
+      height: 16px;
+      margin: 22px auto 0;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e, #86efac);
+      transition: width 3s linear;
+    }
+
+    .joke-img {
+      width: min(100%, 430px);
+      display: block;
+      margin: 14px auto 10px auto;
+      border-radius: 22px;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.5);
+      border: 3px solid rgba(255,255,255,0.15);
+      animation: popIn 0.35s ease;
+    }
+
+    .joke-title {
+      font-size: 2rem;
+      margin-top: 10px;
+      color: #ffb4b4;
+    }
+
+    .joke-message {
+      font-size: 1.28rem;
+      line-height: 1.8;
+      color: #f8fafc;
+      margin-top: 10px;
+    }
+
+    .joke-caption {
+      font-size: 1.05rem;
+      color: #d1d5db;
+      margin-top: 8px;
+    }
+
+    .restart-btn {
+      margin-top: 22px;
+      padding: 12px 22px;
+      border-radius: 14px;
+      background: #ef4444;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .restart-btn:hover {
+      transform: scale(1.05);
+      background: #dc2626;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0.8;
+      animation: twinkle 2.5s infinite ease-in-out;
+    }
+
+    .emoji-float {
+      position: absolute;
+      bottom: -20px;
+      font-size: 22px;
+      animation: floatUp linear infinite;
+      opacity: 0.85;
+      user-select: none;
+    }
+
+    .shake {
+      animation: screenShake 0.5s ease-in-out 2;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(-7px); opacity: 1; }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.8); }
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 0; }
+      12% { opacity: 0.85; }
+      to { transform: translateY(-110vh); opacity: 0; }
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.82); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 600px) {
+      .title { font-size: 1.7rem; }
+      .line { font-size: 1.08rem; }
+      .question, .suspense-title { font-size: 1.3rem; }
+      .joke-title { font-size: 1.45rem; }
+      .joke-message, .suspense-text { font-size: 1.08rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="mainCard">
+    <h1 class="title">⚠️ Mensaje serio para el bro ⚠️</h1>
+    <p class="subtitle">Lee todo hasta el final, no cierres esto todavía...</p>
+
+    <div id="story">
+      <p class="line" id="line1">Pana…</p>
+      <p class="line" id="line2">Tengo algo muy importante que decirte desde hace rato…</p>
+      <p class="line" id="line3">Y después de pensarlo bien, creo que hoy sí te lo voy a soltar.</p>
+      <button class="main-btn hidden" id="continueBtn">👉 Sigue leyendo</button>
+    </div>
+
+    <div class="question-box hidden" id="questionBox">
+      <p class="question">¿Estás listo para saber la verdad?</p>
+      <div class="options">
+        <button class="option-btn" onclick="startSuspense()">Sí, suéltala</button>
+        <button class="option-btn" onclick="startSuspense()">Manda nomás</button>
+      </div>
+    </div>
+
+    <div class="suspense-box hidden" id="suspenseBox">
+      <p class="suspense-title">Aguanta bro…</p>
+      <p class="suspense-text" id="suspenseText">
+        Estoy buscando la mejor forma de decirte esto sin que te me vayas a desmayar…
+      </p>
+
+      <div class="typing">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="joke-box hidden" id="jokeBox">
+      <img class="joke-img" src="gorila.jpg" alt="Broma del gorila" />
+      <h2 class="joke-title">JAJAJA CAÍSTE DURÍSIMO 💀</h2>
+      <p class="joke-message">
+        Pensaste que venía una confesión seria…<br>
+        pero te atendió directamente el departamento de trolleadas de los panas.
+      </p>
+      <p class="joke-caption">
+        Tranquilo bro, es broma nomás… pero sí caíste feísimo 😂
+      </p>
+      <button class="restart-btn" onclick="restartStory()">Volver a trolear</button>
+    </div>
+  </div>
+
+  <script>
+    const lines = [
+      document.getElementById("line1"),
+      document.getElementById("line2"),
+      document.getElementById("line3")
+    ];
+
+    const continueBtn = document.getElementById("continueBtn");
+    const story = document.getElementById("story");
+    const questionBox = document.getElementById("questionBox");
+    const suspenseBox = document.getElementById("suspenseBox");
+    const jokeBox = document.getElementById("jokeBox");
+    const progressBar = document.getElementById("progressBar");
+    const suspenseText = document.getElementById("suspenseText");
+    const mainCard = document.getElementById("mainCard");
+
+    let timer1, timer2, timer3;
+
+    function showLines() {
+      lines.forEach((line, index) => {
+        setTimeout(() => line.classList.add("show"), index * 1200);
+      });
+      setTimeout(() => continueBtn.classList.remove("hidden"), 3900);
+    }
+
+    function goToQuestion() {
+      story.classList.add("hidden");
+      questionBox.classList.remove("hidden");
+    }
+
+    function startSuspense() {
+      questionBox.classList.add("hidden");
+      suspenseBox.classList.remove("hidden");
+      progressBar.style.width = "0%";
+      setTimeout(() => { progressBar.style.width = "100%"; }, 60);
+
+      suspenseText.innerHTML = "Estoy buscando la mejor forma de decirte esto sin que te me vayas a desmayar…";
+
+      timer1 = setTimeout(() => {
+        suspenseText.innerHTML = "Bro… de verdad esto puede cambiar lo que piensas de mí...";
+      }, 1100);
+
+      timer2 = setTimeout(() => {
+        suspenseText.innerHTML = "Ya casi sale el mensaje final… prepárate mentalmente...";
+      }, 2300);
+
+      timer3 = setTimeout(() => {
+        showJoke();
+      }, 3400);
+    }
+
+    function showJoke() {
+      suspenseBox.classList.add("hidden");
+      jokeBox.classList.remove("hidden");
+      mainCard.classList.add("shake");
+      setTimeout(() => mainCard.classList.remove("shake"), 1000);
+    }
+
+    function restartStory() {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+
+      jokeBox.classList.add("hidden");
+      suspenseBox.classList.add("hidden");
+      questionBox.classList.add("hidden");
+      story.classList.remove("hidden");
+
+      lines.forEach(line => line.classList.remove("show"));
+      continueBtn.classList.add("hidden");
+      progressBar.style.width = "0%";
+      suspenseText.innerHTML = "Estoy buscando la mejor forma de decirte esto sin que te me vayas a desmayar…";
+
+      setTimeout(showLines, 250);
+    }
+
+    continueBtn.addEventListener("click", goToQuestion);
+
+    function createStars() {
+      for (let i = 0; i < 90; i++) {
+        const star = document.createElement("div");
+        star.classList.add("star");
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.top = Math.random() * 100 + "vh";
+        star.style.animationDelay = Math.random() * 3 + "s";
+        star.style.animationDuration = (1.5 + Math.random() * 3) + "s";
+        document.body.appendChild(star);
+      }
+    }
+
+    function createEmojiFloat() {
+      const emojis = ["😂", "🤣", "💀", "😎"];
+      setInterval(() => {
+        const el = document.createElement("div");
+        el.classList.add("emoji-float");
+        el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.fontSize = (18 + Math.random() * 18) + "px";
+        el.style.animationDuration = (5 + Math.random() * 5) + "s";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 10000);
+      }, 700);
+    }
+
+    createStars();
+    createEmojiFloat();
+    showLines();
+  </script>
+</body>
+</html>
